@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  excel-ai-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_SHEETS_CREDENTIALS=${GOOGLE_SHEETS_CREDENTIALS}
+    volumes:
+      - ./data:/app/data  # For persistent data storage
+      - ./logs:/app/logs  # For log files
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.excel-ai.rule=Host(`excel-ai.localhost`)"
+      - "traefik.http.services.excel-ai.loadbalancer.server.port=8501"
+
+  # Optional: Add a reverse proxy (Traefik)
+  traefik:
+    image: traefik:v2.10
+    ports:
+      - "80:80"
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+    restart: unless-stopped
+    profiles:
+      - proxy
+
+networks:
+  default:
+    name: excel-ai-network

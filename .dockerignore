@@ -1,0 +1,55 @@
+# Git
+.git
+.gitignore
+
+# Virtual environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.docker
+.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+temp_*.xlsx
+*.tmp
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation that's not needed in container
+README.md
+docs/
+
+# Test files
+test_*.py
+*_test.py
+
+# Backup files
+backup_*.tar.gz
+
+# Large data files (optional - uncomment if you don't want to include sample data)
+# sample_data/
