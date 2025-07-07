@@ -1,0 +1,49 @@
+{
+  "name": "Excel AI Analyzer",
+  "description": "AI-powered Excel file analysis tool with natural language queries, data visualization, and anomaly detection",
+  "repository": "https://github.com/YOUR_USERNAME/excel_ai",
+  "logo": "https://raw.githubusercontent.com/YOUR_USERNAME/excel_ai/main/assets/logo.png",
+  "keywords": [
+    "python",
+    "streamlit",
+    "ai",
+    "excel",
+    "data-analysis",
+    "openai",
+    "visualization",
+    "pandas"
+  ],
+  "website": "https://your-excel-ai-analyzer.herokuapp.com/",
+  "env": {
+    "OPENAI_API_KEY": {
+      "description": "Your OpenAI API key for AI-powered features",
+      "required": true
+    },
+    "SECRET_KEY": {
+      "description": "Secret key for session management and security",
+      "generator": "secret"
+    },
+    "ENVIRONMENT": {
+      "description": "Application environment",
+      "value": "production"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "stack": "heroku-22",
+  "addons": [
+    {
+      "plan": "heroku-postgresql:hobby-dev",
+      "as": "DATABASE"
+    }
+  ]
+}
