@@ -537,6 +537,33 @@ class AIAnalyzer:
                     f""
                 ])
         
+        # Add CRITICAL TOP VALUES section for accuracy in top/highest queries
+        if len(numeric_cols) > 0:
+            context_parts.extend([
+                f"=== CRITICAL TOP VALUES (USE FOR TOP/HIGHEST QUESTIONS) ===",
+                f"IMPORTANT: When asked about 'top', 'highest', 'most', 'maximum' values,"
+            ])
+            
+            for col in numeric_cols:
+                if df[col].notna().sum() > 0:
+                    # Get top 10 values with their indices
+                    top_values = df.nlargest(10, col)
+                    context_parts.append(f"TOP 10 {col}:")
+                    for i, (idx, row) in enumerate(top_values.iterrows(), 1):
+                        # Include key columns for context
+                        row_info = f"  #{i}: {row[col]}"
+                        # Add other meaningful columns for context
+                        other_cols = [c for c in df.columns if c != col and not df[c].isna().all()][:3]
+                        if other_cols:
+                            other_values = [f"{c}={row[c]}" for c in other_cols if pd.notna(row[c])]
+                            if other_values:
+                                row_info += f" ({', '.join(other_values)})"
+                        context_parts.append(row_info)
+                    context_parts.append("")
+            
+            context_parts.append("*** ALWAYS use the above TOP VALUES when answering questions about highest/most/top values ***")
+            context_parts.append("")
+        
         # Add comprehensive numeric statistics
         if len(numeric_cols) > 0:
             context_parts.extend([
@@ -641,7 +668,11 @@ class AIAnalyzer:
     def _create_question_prompt(self, df: pd.DataFrame, question: str, data_info: str, context: str) -> str:
         """Create question-answering prompt ensuring full dataset usage."""
         
-        prompt = f"""
+        # Detect if this is a top/highest question for special handling
+        question_lower = question.lower()
+        is_top_question = any(word in question_lower for word in ["top", "highest", "most", "maximum", "largest", "best"])
+        
+        base_prompt = f"""
         Answer this question about the COMPLETE dataset: "{question}"
         
         You have access to the FULL dataset with {df.shape[0]} rows and {df.shape[1]} columns.
@@ -651,6 +682,24 @@ class AIAnalyzer:
         {data_info}
         
         Additional Context: {context}
+        """
+        
+        if is_top_question:
+            base_prompt += f"""
+        
+        *** CRITICAL INSTRUCTION FOR TOP/HIGHEST QUESTIONS ***
+        This question asks about TOP/HIGHEST values. You MUST use the "CRITICAL TOP VALUES" section 
+        from the dataset information above. Do NOT use the sample data rows - use the pre-calculated 
+        TOP 10 values which represent the actual highest values in the complete dataset.
+        
+        SPECIFICALLY:
+        - Look for the "=== CRITICAL TOP VALUES ===" section
+        - Use those exact rankings and values
+        - These are the definitive top values from all {df.shape[0]} rows
+        - Sample data rows may not contain the highest values
+        """
+        
+        base_prompt += f"""
         
         Instructions for answering:
         1. Base your answer on the ENTIRE dataset (all {df.shape[0]} rows)
@@ -669,7 +718,7 @@ class AIAnalyzer:
         If the question cannot be fully answered with the complete dataset provided, explain exactly what additional data would be needed.
         """
         
-        return prompt
+        return base_prompt
 
     def _extract_enhanced_supporting_data(self, df: pd.DataFrame, question: str) -> Dict[str, Any]:
         """Extract comprehensive supporting data based on the question using FULL dataset."""
