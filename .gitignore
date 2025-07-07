@@ -76,3 +76,58 @@ sample_data/SKU Units Sold_BackUp.xlsx
 # Debug reports (optional - can be regenerated)
 debug_reports/
 *.debug.json
+
+# Additional Security for Public Deployment
+# API Keys and Secrets
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets/
+.secrets/
+credentials/
+.credentials/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache and temporary
+.cache/
+cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# User data and uploads
+user_data/
+uploads/
+files/
+
+# Configuration with sensitive data
+config.local.py
+config.production.py
+local_settings.py
+
+# Backup files
+*.bak
+*.backup
+*.orig
+*~
+
+# Google Sheets credentials
+credentials.json
+token.json
+service_account.json
+
+# Docker override files with secrets
+docker-compose.override.yml
+docker-compose.prod.yml
+docker-compose.local.yml
+
+# CI/CD specific
+.github/secrets/
+.gitlab-ci.local.yml

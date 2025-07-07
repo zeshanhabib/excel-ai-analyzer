@@ -248,7 +248,86 @@ python create_google_sheets_sample.py
 - Real-time data updates
 - Professional formatting with headers
 
-## 🔧 Advanced Features
+## � Deployment Options
+
+### Quick Deploy (1-Click)
+
+| Platform | Cost | Time | Difficulty | Live URL |
+|----------|------|------|------------|----------|
+| **Streamlit Cloud** | Free | 2 min | ⭐ | `your-app.streamlit.app` |
+| **Railway** | $5/mo | 5 min | ⭐⭐ | `your-app.railway.app` |
+| **Heroku** | $7/mo | 10 min | ⭐⭐ | `your-app.herokuapp.com` |
+
+### Deploy to Streamlit Cloud (FREE) 🌟
+
+1. **Fork this repository** to your GitHub account
+2. **Visit**: https://share.streamlit.io/
+3. **Sign in** with GitHub
+4. **Create new app** → Select your forked repo
+5. **Set main file**: `app.py`
+6. **Add secrets** in dashboard:
+   ```toml
+   OPENAI_API_KEY = "your_openai_api_key_here"
+   ```
+7. **Deploy!** Your app will be live at `https://your-username-excel-ai.streamlit.app`
+
+### Deploy to Railway ($5/month) 🚂
+
+1. **Fork this repository**
+2. **Go to**: https://railway.app/
+3. **Deploy from GitHub repo** → Select your fork
+4. **Railway auto-detects** Docker configuration
+5. **Add environment variable**: `OPENAI_API_KEY`
+6. **Custom domain** (optional): Configure your own domain
+
+### One-Line Docker Deploy 🐳
+
+```bash
+git clone https://github.com/YOUR_USERNAME/excel-ai-analyzer.git
+cd excel-ai-analyzer
+echo "OPENAI_API_KEY=your-key-here" > .env
+docker-compose up -d
+```
+
+### Platform-Specific Guides
+
+📚 **Detailed deployment guides available**:
+- **[Streamlit Cloud](deployment/streamlit-cloud/README.md)** - Free hosting
+- **[Railway](deployment/railway/README.md)** - Modern platform
+- **[Heroku](deployment/heroku/README.md)** - Traditional PaaS
+- **[AWS EC2](deployment/aws/README.md)** - Enterprise cloud
+- **[VPS](deployment/vps/README.md)** - Self-hosted solution
+- **[Quick Deploy Guide](QUICK_DEPLOY.md)** - 5-minute setup
+
+### Environment Setup
+
+**Required Environment Variables:**
+```bash
+# Copy example file
+cp .env.example .env
+
+# Edit with your values
+OPENAI_API_KEY=sk-your-actual-api-key-here    # Required
+OPENAI_MODEL=gpt-4o-mini                       # Optional
+GOOGLE_SHEETS_CREDENTIALS=                     # Optional
+```
+
+**Get OpenAI API Key:**
+1. Visit: https://platform.openai.com/api-keys
+2. Create new secret key
+3. Copy and use in deployment
+
+### Security & Best Practices
+
+- ✅ Environment variables for secrets
+- ✅ HTTPS/SSL enabled on all platforms
+- ✅ No hardcoded API keys in code
+- ✅ Input validation and sanitization
+- ✅ Docker security best practices
+
+📋 **[Security Checklist](PUBLIC_DEPLOYMENT_CHECKLIST.md)** - Review before going public
+
+## �🔧 Advanced Features
 
 ### Custom Visualizations
 - Build custom charts with the interactive chart builder
