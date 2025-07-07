@@ -454,7 +454,7 @@ def display_ai_analysis(df: pd.DataFrame):
     st.subheader("🤖 AI Analysis")
     
     # Analysis tabs
-    tab1, tab2, tab3 = st.tabs(["💡 Data Insights", "❓ Ask Questions", "🔍 Anomaly Detection"])
+    tab1, tab2, tab3, tab4 = st.tabs(["💡 Data Insights", "❓ Ask Questions", "🔍 Anomaly Detection", "🐛 Debug Report"])
     
     with tab1:
         if st.button("Generate AI Insights", type="primary"):
@@ -624,6 +624,66 @@ def display_visualizations(df: pd.DataFrame):
                 fig = visualizer.create_box_plot(df, numeric_cols[:5])  # Limit to 5 columns
                 st.plotly_chart(fig, use_container_width=True)
 
+def setup_debug_controls():
+    """Setup debugging controls in sidebar."""
+    import config
+    
+    st.sidebar.subheader("🔧 Debug Settings")
+    
+    # Debug level selection
+    debug_level_names = ['MINIMAL', 'STANDARD', 'DETAILED', 'FULL']
+    current_level_name = next((name for name, level in config.DEBUG_LEVELS.items() 
+                              if level == config.DEBUG_LEVEL), 'STANDARD')
+    
+    selected_level = st.sidebar.selectbox(
+        "Debug Level",
+        debug_level_names,
+        index=debug_level_names.index(current_level_name),
+        help="Control the amount of debugging information captured"
+    )
+    
+    # Update config with selected level
+    config.DEBUG_LEVEL = config.DEBUG_LEVELS[selected_level]
+    
+    # Debug options
+    debug_options = st.sidebar.expander("🔍 Advanced Debug Options")
+    with debug_options:
+        config.AI_USE_FULL_DATASET = st.checkbox(
+            "Use Full Dataset for AI", 
+            value=config.AI_USE_FULL_DATASET,
+            help="Use complete dataset instead of samples for AI analysis"
+        )
+        
+        config.DEBUG_TRACK_DATA_SIZE = st.checkbox(
+            "Track Data Sizes", 
+            value=config.DEBUG_TRACK_DATA_SIZE,
+            help="Track data sizes at each processing step"
+        )
+        
+        config.DEBUG_TRACK_AI_PROMPTS = st.checkbox(
+            "Track AI Prompts", 
+            value=config.DEBUG_TRACK_AI_PROMPTS,
+            help="Log AI prompt construction and responses"
+        )
+        
+        config.DEBUG_SAVE_DEBUG_LOGS = st.checkbox(
+            "Save Debug Logs", 
+            value=config.DEBUG_SAVE_DEBUG_LOGS,
+            help="Save detailed debug logs to file"
+        )
+    
+    # Show current debug status
+    if config.DEBUG_LEVEL > 0:
+        debug_status = debug_options.container()
+        debug_status.info(f"🐛 Debug Level: {selected_level} (Level {config.DEBUG_LEVEL})")
+        
+        if config.AI_USE_FULL_DATASET:
+            debug_status.success("✅ Using full datasets for AI analysis")
+        else:
+            debug_status.warning("⚠️ Using data samples for AI analysis")
+
+# ...existing code...
+
 def main():
     """Main application function."""
     # Header
@@ -638,6 +698,9 @@ def main():
     
     # Google Sheets sample generation
     generate_google_sheets_samples()
+    
+    # Debug controls
+    setup_debug_controls()
     
     # Load data from various sources
     df = load_data_source()

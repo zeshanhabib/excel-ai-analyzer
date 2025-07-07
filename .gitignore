@@ -69,3 +69,10 @@ temp_*.xlsx
 # *.xlsx
 # *.xls
 # *.csv
+
+# Specific large data files
+sample_data/SKU Units Sold_BackUp.xlsx
+
+# Debug reports (optional - can be regenerated)
+debug_reports/
+*.debug.json
