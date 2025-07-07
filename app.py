@@ -11,6 +11,7 @@ from utils import (
 )
 import os
 import json
+import tempfile
 from typing import Dict, Any, Optional
 import logging
 
@@ -374,27 +375,36 @@ def load_excel_file(uploaded_file) -> Optional[pd.DataFrame]:
     """Load and process uploaded Excel file."""
     if uploaded_file is not None:
         try:
-            # Save uploaded file temporarily
-            with open("temp_file.xlsx", "wb") as f:
-                f.write(uploaded_file.getbuffer())
+            import tempfile
             
-            # Read Excel file
-            excel_reader = ExcelReader()
-            sheets = excel_reader.read_excel("temp_file.xlsx")
+            # Create a temporary file with proper cleanup
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_file:
+                tmp_file.write(uploaded_file.getbuffer())
+                tmp_file_path = tmp_file.name
             
-            # Clean up temp file
-            os.remove("temp_file.xlsx")
-            
-            # Handle multiple sheets
-            if len(sheets) > 1:
-                sheet_names = list(sheets.keys())
-                selected_sheet = st.selectbox("Select Sheet", sheet_names)
-                return sheets[selected_sheet]
-            else:
-                return list(sheets.values())[0]
+            try:
+                # Read Excel file
+                excel_reader = ExcelReader()
+                sheets = excel_reader.read_excel(tmp_file_path)
+                
+                # Handle multiple sheets
+                if len(sheets) > 1:
+                    sheet_names = list(sheets.keys())
+                    selected_sheet = st.selectbox("Select Sheet", sheet_names)
+                    return sheets[selected_sheet]
+                else:
+                    return list(sheets.values())[0]
+                    
+            finally:
+                # Always clean up temp file
+                try:
+                    os.remove(tmp_file_path)
+                except OSError:
+                    pass  # File already deleted or not accessible
                 
         except Exception as e:
             st.error(f"Error loading file: {str(e)}")
+            logger.error(f"Excel file loading error: {str(e)}")
             return None
     return None
 

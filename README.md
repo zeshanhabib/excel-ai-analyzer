@@ -369,6 +369,12 @@ Key libraries used:
    - Verify you have credits in your OpenAI account
    - The app works without AI features if no API key is provided
 
+3. **"Error loading file: [Errno 2] No such file or directory: 'temp_file.xlsx'"**
+   - **Fixed in latest version** ✅
+   - This was a temporary file handling issue on hosting platforms
+   - Update to the latest version for the fix
+   - If still occurring, ensure the app has write permissions to temporary directories
+
 3. **"Excel file not reading"**
    - Ensure file is .xlsx or .xls format
    - Check if file is corrupted or password-protected

@@ -213,15 +213,24 @@ class DebugTracker:
         """Export comprehensive debug report to file."""
         if not filepath:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filepath = f"debug_report_{timestamp}.json"
+            # Use debug_reports directory if it exists, otherwise current directory
+            reports_dir = "debug_reports" if os.path.exists("debug_reports") else "."
+            filepath = os.path.join(reports_dir, f"debug_report_{timestamp}.json")
         
         debug_summary = self.get_debug_summary()
         
-        with open(filepath, 'w') as f:
-            json.dump(debug_summary, f, indent=2, default=str)
-        
-        self.log_debug(f"Debug report exported to {filepath}", level=1)
-        return filepath
+        try:
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            
+            with open(filepath, 'w') as f:
+                json.dump(debug_summary, f, indent=2, default=str)
+            
+            self.log_debug(f"Debug report exported to {filepath}", level=1)
+            return filepath
+        except Exception as e:
+            self.log_debug(f"Failed to export debug report: {str(e)}", level=1)
+            return None
 
 def debug_performance(func):
     """Decorator to track function performance."""
